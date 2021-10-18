@@ -356,16 +356,7 @@ JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_acl_1read
  }
 
 
- /*
-  * Class:     android_xkkj_api_HwAcl
-  * Method:    acl_permission
-  * Signature: ()I
-  */
- JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_acl_1permission
-   (JNIEnv *env, jobject jobj)
- {
-        return acl16_permission();
- }
+
 
  /*
   * Class:     android_xkkj_api_HwAcl
@@ -393,7 +384,7 @@ JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_acl_1read
 JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_get_1backlight
     (JNIEnv *env, jobject jobj)
 {
-    return xkkj_backlight_read();
+    return backlight_read();
 }
 
   /*
@@ -404,7 +395,7 @@ JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_get_1backlight
 JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_set_1backlight
     (JNIEnv *env, jobject jobj, jint backlight)
 {
-    return xkkj_backlight_write(backlight);
+    return backlight_write(backlight);
 }
 
   /*
@@ -415,5 +406,11 @@ JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_set_1backlight
 JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_get_1lightvalue
     (JNIEnv *env, jobject  jobj)
 {
-    return xkkj_light_read();
+    return light_read();
 }
+
+ JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_board_1select
+      (JNIEnv *env , jobject obj)
+ {
+       return board_select();
+ }

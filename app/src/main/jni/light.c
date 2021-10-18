@@ -5,9 +5,11 @@
 #include "light.h"
 
 static const char* backlight_node = "/sys/class/backlight/backlight/brightness";
-static const char* light_node="/sys/bus/iio/devices/iio:device0/in_voltage2_raw";
+static const char* xkkj_light_node="/sys/bus/iio/devices/iio:device0/in_voltage2_raw";
+static const char* smdt_light_node="/sys/bus/iio/devices/iio:device0/in_voltage0_raw";
 
-int xkkj_backlight_read() {
+
+int backlight_read() {
     int backlight_fd = -1;
     char brightness[5];
     backlight_fd  = open(backlight_node, O_RDWR);
@@ -17,14 +19,14 @@ int xkkj_backlight_read() {
     }
     int ret = read(backlight_fd, brightness, 5);
     if (ret < 0) {
-    	LOGE("xkkj_backlight_read, can't read xkkj_backlight_read data");
+    	LOGE("backlight_read, can't read xkkj_backlight_read data");
     }
     close(backlight_fd);
     return atoi(brightness);
 }
 
-int xkkj_backlight_write(int backlight) {
-    LOGE("========xkkj_backlight_write,%d\n",backlight);
+int backlight_write(int backlight) {
+    LOGE("========backlight_write,%d\n",backlight);
     int backlight_fd = -1;
     int bytes = -1 ;
     char brightness[5];
@@ -47,17 +49,20 @@ int xkkj_backlight_write(int backlight) {
 }
 
 
-int xkkj_light_read() {
+int light_read() {
     int light_fd;
     char light[10];
-    light_fd  = open(light_node, O_RDONLY);
+    if(board_select() < 0)
+        light_fd  = open(smdt_light_node, O_RDONLY);
+    else
+        light_fd  = open(xkkj_light_node, O_RDONLY);
     if ( light_fd < 0) {
-        LOGE("can't open node, %s", light_node);
+        LOGE("can't open node light_node");
         return -1;
     }
     int ret = read(light_fd, light, 10);
     if (ret < 0) {
-    	LOGE("xkkj_backlight_read, can't read xxkj_light data");
+    	LOGE("backlight_read, can't read light data");
     }
     close(light_fd);
     return atoi(light);

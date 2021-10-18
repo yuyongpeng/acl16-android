@@ -243,7 +243,6 @@ int acl16_xkkj_open(Acl16* fd);
 int acl16_xkkj_close(Acl16* fd);
 int acl16_xkkj_read(Acl16* fd, uint8_t *data, size_t lenth);
 int acl16_xkkj_write(Acl16* fd, uint8_t *data, size_t lenth);
-int acl16_xkkj_permission();
 int acl16_xkkj_poweron();
 int acl16_xkkj_poweroff();
 
@@ -255,7 +254,6 @@ int acl16_smdt_close(Acl16* fd);
 int acl16_smdt_read(Acl16* fd, uint8_t *data, size_t lenth);
 int acl16_smdt_read2(Acl16* fd, uint8_t *data, size_t lenth);
 int acl16_smdt_write(Acl16* fd, uint8_t *data, size_t lenth);
-int acl16_smdt_permission();
 int acl16_smdt_poweron();
 int acl16_smdt_poweroff();
 
@@ -264,7 +262,10 @@ int acl16_open(Acl16* fd);
 int acl16_close(Acl16* fd);
 int acl16_read(Acl16* fd, uint8_t *data, size_t lenth);
 int acl16_write(Acl16* fd, uint8_t *data, size_t lenth);
-int acl16_permission();
 int acl16_poweron();
 int acl16_poweroff();
+
+
+
+int board_select();
 #endif

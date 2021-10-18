@@ -172,13 +172,6 @@ int acl16_xkkj_close(Acl16* fd) {
 	return ISOSW_SUCCESSFUL;
 }
 
-int acl16_xkkj_permission(){
-    LOGD("acl16_xkkj_permission!");
-    LOGD("/dev/acl162.0:%d",system("/system/bin/chmod 666 /dev/acl162.0"));
-    LOGD("/sys/class/leds/hx-cs/brightness:%d",system("/system/bin/chmod 666 /sys/class/leds/hx-cs/brightness"));
-    LOGD("/sys/class/leds/acl16-en/brightness:%d",system("/system/bin/chmod 666 /sys/class/leds/acl16-en/brightness"));
-    return 0;
-}
 
 int acl16_xkkj_poweron()
 {

@@ -125,12 +125,6 @@ public class HwAcl {
      */
     public native int  acl_read(byte[] rxdata, int lenth);
     /*
-     * 函数名： acl_permission();
-     * 描述：修改设备读写权限
-     * 返回值：0
-     */
-    public native int   acl_permission();
-    /*
      * 函数名： acl_poweron();
      * 描述：设备上电
      * 返回值：正确0 ，错误-1
@@ -147,4 +141,5 @@ public class HwAcl {
     public native  int get_backlight();
     public native  int set_backlight(int  brightness);
     public native  int get_lightvalue();
+    public native  int board_select();
 }

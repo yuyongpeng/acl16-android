@@ -266,11 +266,7 @@ int acl16_smdt_read(Acl16* fd, uint8_t *data, size_t lenth){
     return ret;
 }
 
-int acl16_smdt_permission(){
-    LOGD("acl16_smdt_permission!");
-    system("/system/bin/chmod 666 /dev/ttyS0");
-    return 0;
-}
+
 
 int acl16_smdt_poweron()
 {

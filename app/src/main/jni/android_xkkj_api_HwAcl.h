@@ -191,6 +191,14 @@ JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_acl_1poweroff
   JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_get_1lightvalue
     (JNIEnv *, jobject);
 
+    /*
+     * Class:     android_xkkj_api_HwAcl
+     * Method:    board_select
+     * Signature: ()I
+     */
+    JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_board_1select
+      (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif

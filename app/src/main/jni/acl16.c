@@ -7,8 +7,8 @@
 #include "acl16.h"
 #include "crc16_ccitt.h"
 
-static const char* ACL16_board_select= "/proc/boardinfo";
-static int board_select(){
+const char* ACL16_board_select= "/proc/boardinfo";
+int board_select(){
         int board_fd = open(ACL16_board_select, O_RDONLY);
         if(board_fd < 0){
                 return -1;
@@ -43,14 +43,7 @@ int acl16_write(Acl16* fd, uint8_t *data, size_t lenth){
             }
 }
 
-int acl16_permission(Acl16* fd){
-    LOGD("su:%d",system("/system/xbin/su root"));
-    if(board_select() < 0){
-           return acl16_smdt_permission();
-    }else{
-           return acl16_xkkj_permission();
-    }
-}
+
 
 int acl16_poweron(Acl16* fd){
     if(board_select() < 0){
