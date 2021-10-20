@@ -6,7 +6,10 @@
 
 #include "acl16.h"
 #include "crc16_ccitt.h"
+#include <string.h>
+#include <stdlib.h>
 
+#define DEBUG 0
 const char* ACL16_board_select= "/proc/boardinfo";
 int board_select(){
         int board_fd = open(ACL16_board_select, O_RDONLY);
@@ -187,12 +190,24 @@ static void error_num(uint16_t errorData) {
 
 
 
-static void print_array(uint8_t* data, int len, const char* name) {
-	int i;
-	for (i = 0; i < len; i++) {
-		int j = data[i];
-		LOGE("print_array, %s, %x, %d", name, j, j);
-	}
+void print_array(uint8_t* data, int len, const char* name) {
+#if DEBUG
+	char temp[4] = {0};
+    const int LEN = len * 2;
+    char *buf = (char*)malloc(LEN * sizeof(char));
+    if (NULL == buf) {
+       return;
+    }
+    memset(buf, 0, LEN);
+    for (int i = 0; i < len; i++) {
+    memset(temp, 0, 4);
+    snprintf(temp, 4, "%02x", *(data + i));
+    strcat(buf, temp);
+    }
+    LOGD("%s:%s",name,buf);
+    free(buf);
+    buf = NULL;
+#endif
 }
 
 static int cmd_pack_tx_rx(Acl16* fd, ApduCmd *apduPack, uint8_t *apduData, uint8_t** out) {
@@ -244,14 +259,13 @@ static int cmd_pack_tx_rx(Acl16* fd, ApduCmd *apduPack, uint8_t *apduData, uint8
 		LOGD("acl16_write:%02x,%02x",acl16_write(fd, apduCmdTmp, cmdTxAllLenth),cmdTxAllLenth);
 		//usleep(50000);
 
-		// print_array(apduCmdTmp, cmdTxAllLenth, "HHHHH");
 
 		//spi read data
 		int i;
 
 		for (i = 0; i < 10; i++) {
 			//acl16_read(fd, &rdBuf[0], 1);
-			LOGD("==========readdata=============%02x,%02x",acl16_read(fd, &rdBuf[0], 1),rdBuf[0]);
+			acl16_read(fd, &rdBuf[0], 1);
 			if(rdBuf[0] == 0x81)
 			break;
 			usleep(5000);
@@ -304,6 +318,7 @@ int acl16_produce_set_config(Acl16* fd, uint8_t* rxData){
 	apduCmdTmp.p2 = CMD_PRODUCE_SET_CONFIG_P2;
 	apduCmdTmp.lc = CMD_PRODUCE_SET_CONFIG_TX_LENTH; //设置结构体长度48字节固定 imo20200106
 	apduCmdTmp.le = CMD_PRODUCE_SET_CONFIG_RX_LENTH;
+	print_array(rxData,CMD_PRODUCE_SET_CONFIG_TX_LENTH,"CMD_PRODUCE_SET_CONFIG_TX");
 	int errnoNu = cmd_pack_tx_rx(fd, &apduCmdTmp, (uint8_t*)rxData, &rdBufTmp);
 	free(rdBufTmp);
 	rdBufTmp = NULL;
@@ -322,7 +337,6 @@ int acl16_produce_Clear_AllInfo(Acl16* fd)
     apduCmdTmp.p2 = CMD_PRODUCE_CLEAR_ALLINFO_P2;
     apduCmdTmp.lc = CMD_PRODUCE_CLEAR_ALLINFO_TX_LENTH;
     apduCmdTmp.le = CMD_PRODUCE_CLEAR_ALLINFO_RX_LENTH;
-    LOGD("%02x,%02x,%02x,%02x",apduCmdTmp.ch,apduCmdTmp.cmd,apduCmdTmp.p1,apduCmdTmp.p2);
     int errnoNu = cmd_pack_tx_rx(fd, &apduCmdTmp, NULL, &rdBufTmp);
     free(rdBufTmp);
 	rdBufTmp = NULL;
@@ -369,7 +383,7 @@ int acl16_get_random_data(Acl16* fd, uint8_t* rdBuf, uint16_t rdLenth) {
 		free(rdBufTmp);
 		rdBufTmp = NULL;
 	}
-
+    print_array(rdBuf,rdLenth,"CMD_GET_RANDOM_16");
 	return errnoNu;
 }
 
@@ -392,7 +406,7 @@ int acl16_get_device_info(Acl16* fd, uint8_t* rdAcl16){
 		free(rdBufTmp);
 		rdBufTmp = NULL;
 	}
-
+    print_array(rdAcl16,CMD_GET_DEVICE_INFO_RX_LENTH,"CMD_GET_DEVICE_INFO_RX");
 	return errnoNu;
 }
 
@@ -407,7 +421,7 @@ int acl16_set_pin(Acl16* fd, uint8_t* txData) { // 固定32字节的 txData
 	apduCmdTmp.p2 = CMD_PARAMTER_DISABLE;
 	apduCmdTmp.lc = CMD_SET_USER_PIN_TX_LENTH;
 	apduCmdTmp.le = CMD_SET_USER_PIN_RX_LENTH;
-
+    print_array(txData,CMD_SET_USER_PIN_TX_LENTH,"CMD_SET_USER_PIN_TX");
 	int errnoNu = cmd_pack_tx_rx(fd, &apduCmdTmp, txData, &rdBufTmp);
 	free(rdBufTmp);
 	rdBufTmp = NULL;
@@ -424,7 +438,7 @@ int acl16_change_pin(Acl16* fd, uint8_t* txData) { // 固定32字节的 txData
 	apduCmdTmp.p2 = CMD_PARAMTER_DISABLE;
 	apduCmdTmp.lc = CMD_SET_USER_PIN_TX_LENTH;
 	apduCmdTmp.le = CMD_CHANGE_USERPIN_RX_LENTH;
-
+    print_array(txData,CMD_SET_USER_PIN_TX_LENTH,"CMD_CHANGE_USERPIN_TX");
 	int errnoNu = cmd_pack_tx_rx(fd, &apduCmdTmp, txData, &rdBufTmp);
 	free(rdBufTmp);
 	rdBufTmp = NULL;
@@ -450,7 +464,7 @@ int acl16_get_pin_info(Acl16* fd, uint8_t* status){
 		free(rdBufTmp);
 		rdBufTmp = NULL;
 	}
-
+    print_array(status,CMD_GET_PIN_INFO_RX_LENTH,"CMD_GET_PIN_INFO_RX");
 	return errnoNu;
 }
 
@@ -466,7 +480,7 @@ int acl16_verify_pin(Acl16* fd, uint8_t* txData) { // 固定16字节的
 	apduCmdTmp.p2 = CMD_PARAMTER_DISABLE;
 	apduCmdTmp.lc = CMD_VERIFY_USERPIN_TX_LENTH;// 这里下发是16个字节 imo20200106
 	apduCmdTmp.le = CMD_VERIFY_USERPIN_RX_LENTH;
-
+    print_array(txData,CMD_VERIFY_USERPIN_TX_LENTH,"CMD_VERIFY_USERPIN_TX");
 	int errnoNu = cmd_pack_tx_rx(fd, &apduCmdTmp, txData, &rdBufTmp);
 	free(rdBufTmp);
 	rdBufTmp = NULL;
@@ -577,6 +591,7 @@ int acl16_generateKeyPariById(Acl16* fd, uint8_t *rdBuf)
 		free(rdBufTmp);
 		rdBufTmp = NULL;
 	}
+	print_array(rdBuf,CMD_GENERATE_KEYPARI_BY_ID_RX_LENTH,"CMD_GENERATE_KEYPARI_BY_ID_RX");
     return errnoNu;
 }
 
@@ -593,30 +608,30 @@ int acl16_ecdsa_sign(Acl16* fd, uint8_t *txData, uint8_t *signature) { // 固定
 	apduCmdTmp.p2 = 0;
 	apduCmdTmp.lc = CMD_ECDSA_SIGN_TX_LENTH;
 	apduCmdTmp.le = CMD_ECDSA_SIGN_RX_LENTH;
-
+    print_array(txData,CMD_ECDSA_SIGN_TX_LENTH,"CMD_ECDSA_SIGN_TX");
 	int errorNu = cmd_pack_tx_rx(fd, &apduCmdTmp, txData, &rdBufTmp);
 	if (rdBufTmp) {
 		memcpy(signature, (rdBufTmp + 3), CMD_ECDSA_SIGN_RX_LENTH);
 		free(rdBufTmp);
 		rdBufTmp = NULL;
 	}
-
+	print_array(signature,CMD_ECDSA_SIGN_RX_LENTH,"CMD_ECDSA_SIGN_RX");
 	return errorNu;
 }
 
 //16.Ecdsa验签 CMD_ECDSA_VERIFY 0x0C
-int acl16_ecdsa_verify(Acl16* fd,  uint8_t *signature) { // msg=32,verifyData=64,pubkey=64
+int acl16_ecdsa_verify(Acl16* fd,  uint8_t *signature) { // msg=32,verifyData=64
 	uint8_t *rdBufTmp = NULL;
-	uint8_t txData[160];
+	uint8_t txData[96];
 	ApduCmd apduCmdTmp;
 	apduCmdTmp.ch = CMD_TX_CH;
 	apduCmdTmp.cmd = CMD_ECDSA_VERIFY;
 	apduCmdTmp.p1 = P1_DEFAULT_VALUE;
-	apduCmdTmp.p2 = 1;
-	apduCmdTmp.lc = CMD_ECDSA_VERIFY_TX160_LENTH;
+	apduCmdTmp.p2 = 0;
+	apduCmdTmp.lc = CMD_ECDSA_VERIFY_TX96_LENTH;
 	apduCmdTmp.le = CMD_ECDSA_VERIFY_RX_LENTH;
-
-	memcpy(txData, signature, 160);
+    print_array(signature,CMD_ECDSA_VERIFY_TX96_LENTH,"CMD_ECDSA_VERIFY_TX");
+	memcpy(txData, signature, 96);
 	uint16_t errnoNu = cmd_pack_tx_rx(fd, &apduCmdTmp, txData, &rdBufTmp);
 	free(rdBufTmp);
 	rdBufTmp = NULL;
@@ -640,5 +655,6 @@ int acl16_export_public_key(Acl16* fd, uint8_t* pubkey) { // 固定64字节的 p
 		free(rdBufTmp);
 		rdBufTmp = NULL;
 	}
+	print_array(pubkey,CMD_EXPORT_PUBLICKEY_BY_ID_RX_LENTH,"CMD_EXPORT_PUBLICKEY_BY_ID_RX");
 	return errnoNu;
 }
