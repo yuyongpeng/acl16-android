@@ -185,12 +185,14 @@ JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_get_1pin_1info
   (JNIEnv *env, jobject jobj, jbyteArray pin_info)
 {
         LOGD("Java_android_1xkkj_1api_HwAcl_get_1pin_1info!");
-        jbyte *buffer = (jbyte*)malloc(sizeof(Acl16PinInfo)+1);
+        jbyte *buffer = (jbyte*)malloc(sizeof(Acl16PinInfo));
         if(NULL == buffer)
         {
             LOGE("malloc failed！");
             return NULL;
         }
+        memset(buffer, 0, sizeof(Acl16PinInfo));
+        LOGD("%p,%02x,%02x,%02x,%02x",buffer,*buffer,*(buffer+1),*(buffer+2),*(buffer+3));
         int errnoNu = acl16_get_pin_info(&acl16,(uint8_t*)buffer);
         if (errnoNu != ISOSW_SUCCESSFUL) {
             LOGE("acl16_get_pin_info exec failed!");
@@ -258,9 +260,9 @@ JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_generate_1KeyPariById
 JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_ecdsa_1sign
   (JNIEnv *env, jobject jobj, jbyteArray  txData, jbyteArray  signature)
 {
-     LOGD("Java_android_1xkkj_1api_HwAcl_ecdsa_1sign!");
+                LOGD("Java_android_1xkkj_1api_HwAcl_ecdsa_1sign!");
                 jbyte *txbuffer = env->GetByteArrayElements(txData,0);
-                jbyte *rxbuffer = (jbyte*)malloc(64);
+                jbyte *rxbuffer = (jbyte*)malloc(65);
                 if(NULL == rxbuffer)
                 {
                     LOGE("malloc failed!");
@@ -273,7 +275,7 @@ JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_ecdsa_1sign
                     return errnoNu;
                 }
                 env->ReleaseByteArrayElements(txData,txbuffer,0);
-                env->SetByteArrayRegion(signature,0,64,(const jbyte*)rxbuffer);
+                env->SetByteArrayRegion(signature,0,65,(const jbyte*)rxbuffer);
                 return ISOSW_SUCCESSFUL;
 
 }
