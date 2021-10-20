@@ -97,7 +97,7 @@ public class HwAcl {
     /*
      * 函数名：ecdsa_verify(byte[] signature);
      * 描述：Ecdsa验签 CMD_ECDSA_VERIFY 0x0C
-     * 传参：signature  验证的数据
+     * 传参：signature  Hash值+签名值(96字节)
      * 返回值：正确返回0x9000,错误查看对应的错误码
      */
     public native int  ecdsa_verify(byte[] signature);
