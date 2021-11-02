@@ -416,3 +416,10 @@ JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_get_1lightvalue
  {
        return board_select();
  }
+
+
+JNIEXPORT void JNICALL Java_android_1xkkj_1api_HwAcl_DebugSwitch
+  (JNIEnv *env, jobject obj, jboolean status)
+ {
+    return DebugSwitch(status==JNI_TRUE ? 1: 0);
+ }

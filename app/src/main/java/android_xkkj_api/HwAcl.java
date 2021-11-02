@@ -142,4 +142,5 @@ public class HwAcl {
     public native  int set_backlight(int  brightness);
     public native  int get_lightvalue();
     public native  int board_select();
+    public native  void DebugSwitch(boolean status);
 }

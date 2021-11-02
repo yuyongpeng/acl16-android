@@ -9,7 +9,15 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define DEBUG 0
+static int Debug=0;
+
+void DebugSwitch(int status)
+{
+    Debug=status;
+    LOGD("%d",Debug);
+}
+
+
 const char* ACL16_board_select= "/proc/boardinfo";
 int board_select(){
         int board_fd = open(ACL16_board_select, O_RDONLY);
@@ -191,7 +199,7 @@ static void error_num(uint16_t errorData) {
 
 
 void print_array(uint8_t* data, int len, const char* name) {
-#if DEBUG
+    if( 1 == Debug ){
 	char temp[4] = {0};
     const int LEN = len * 2;
     char *buf = (char*)malloc(LEN * sizeof(char));
@@ -207,7 +215,7 @@ void print_array(uint8_t* data, int len, const char* name) {
     LOGD("%s:%s",name,buf);
     free(buf);
     buf = NULL;
-#endif
+    }
 }
 
 static int cmd_pack_tx_rx(Acl16* fd, ApduCmd *apduPack, uint8_t *apduData, uint8_t** out) {

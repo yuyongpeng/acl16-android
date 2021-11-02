@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
 //        Log.d(TAG, "backlight == " + backlight);
 //        int light=loader.get_lightvalue(); //获取光敏值
 //        Log.d(TAG, "lightvalue == " + light);
-
+        loader.DebugSwitch(false);
         for(int i=1; i<=1000; i++){
         try {
             Thread.sleep((long) 2000);

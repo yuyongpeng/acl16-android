@@ -267,5 +267,6 @@ int acl16_poweroff();
 
 
 void print_array(uint8_t* data, int len, const char* name);
-int board_select();
+int  board_select();
+void DebugSwitch(int status);
 #endif

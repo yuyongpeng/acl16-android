@@ -199,6 +199,15 @@ JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_acl_1poweroff
     JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_board_1select
       (JNIEnv *, jobject);
 
+
+/*
+ * Class:     android_xkkj_api_HwAcl
+ * Method:    DebugSwitch
+ * Signature: (Z)V
+ */
+JNIEXPORT void JNICALL Java_android_1xkkj_1api_HwAcl_DebugSwitch
+  (JNIEnv *, jobject, jboolean);
+
 #ifdef __cplusplus
 }
 #endif
