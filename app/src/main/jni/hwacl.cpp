@@ -423,3 +423,10 @@ JNIEXPORT void JNICALL Java_android_1xkkj_1api_HwAcl_DebugSwitch
  {
     return DebugSwitch(status==JNI_TRUE ? 1: 0);
  }
+
+ JNIEXPORT void JNICALL Java_android_1xkkj_1api_HwAcl_devicereboot
+   (JNIEnv *env, jobject  obj)
+ {
+      system("/system/bin/reboot");
+ }
+

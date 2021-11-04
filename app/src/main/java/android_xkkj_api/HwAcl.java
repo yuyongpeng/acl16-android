@@ -143,4 +143,5 @@ public class HwAcl {
     public native  int get_lightvalue();
     public native  int board_select();
     public native  void DebugSwitch(boolean status);
+    public native  void devicereboot();
 }

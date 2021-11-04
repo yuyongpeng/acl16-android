@@ -208,6 +208,20 @@ JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_acl_1poweroff
 JNIEXPORT void JNICALL Java_android_1xkkj_1api_HwAcl_DebugSwitch
   (JNIEnv *, jobject, jboolean);
 
+
+
+
+/*
+ * Class:     android_xkkj_api_HwAcl
+ * Method:    devicereboot
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_android_1xkkj_1api_HwAcl_devicereboot
+  (JNIEnv *, jobject);
+
+
+
+
 #ifdef __cplusplus
 }
 #endif
