@@ -172,7 +172,7 @@ static int acl16_smdt_config(Acl16* fd, int baudrate, int flow_ctrl,int databits
 
 
 int acl16_smdt_open(Acl16* fd){
-        LOGD("acl16_smdt_open!");
+        print_array(NULL,0,"acl16_smdt_open!");
         int errnoNu;
         fd->_fd = -1;
         fd->_fd_cs = -1;
@@ -180,7 +180,7 @@ int acl16_smdt_open(Acl16* fd){
         	fd->_fd = errnoNu = open(ACL16_smdt_device, O_RDWR);
         	//fd->_fd = errnoNu = open(ACL16_smdt_device, O_RDWR | O_NOCTTY);
         	if (errnoNu < 0) {
-        		LOGD("can't open device, %s\n", ACL16_smdt_device);
+        		LOGE("can't open device, %s\n", ACL16_smdt_device);
         		break;
         	}
         	errnoNu = acl16_smdt_config(fd, 115200, 0,8, 1,'N');
@@ -197,19 +197,19 @@ int acl16_smdt_open(Acl16* fd){
 }
 
 int  acl16_smdt_close(Acl16* fd){
-        LOGD("acl16_smdt_close!");
+        print_array(NULL,0,"acl16_smdt_close!");
         close(fd->_fd);
         return ISOSW_SUCCESSFUL;
 }
 
 
 int acl16_smdt_write(Acl16* fd, uint8_t *data, size_t lenth){
-    LOGD("acl16_smdt_write!");
+    print_array(NULL,0,"acl16_smdt_write!");
      int len = write(fd->_fd, data, lenth);
      if (len != lenth )
      {
          tcflush(fd->_fd, TCOFLUSH);
-         LOGD("smdt_Write, can't write data to ttyS0 port\n");
+         LOGE("smdt_Write, can't write data to tty port\n");
      }
      return len;
 }
@@ -217,7 +217,7 @@ int acl16_smdt_write(Acl16* fd, uint8_t *data, size_t lenth){
 
 int acl16_smdt_read2(Acl16* fd, uint8_t *recv_buf, size_t data_len)
 {
-    LOGD("acl16_smdt seclect read!");
+    print_array(NULL,0,"acl16_smdt seclect read!");
     int i = 0;
     int len = 0;
     int fs_sel = 0;
@@ -256,11 +256,11 @@ int acl16_smdt_read2(Acl16* fd, uint8_t *recv_buf, size_t data_len)
 
 
 int acl16_smdt_read(Acl16* fd, uint8_t *data, size_t lenth){
-    LOGD("acl16_smdt_read!");
+    print_array(NULL,0,"acl16_smdt_read!");
     int ret = read(fd->_fd, data, lenth);
     if (ret < 0)
     {
-    	LOGD("smdt_read, can't read data to ttyS0 port");
+    	LOGE("smdt_read, can't read data to ttyS0 port");
     	return ret;
     }
     return ret;

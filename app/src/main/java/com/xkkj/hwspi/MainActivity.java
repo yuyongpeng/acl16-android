@@ -4,13 +4,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
+import android_xkkj_api.HwAcl;
+
 import android.util.Log;
 import android.widget.TextView;
+//
+//import java.security.MessageDigest;
+//import java.security.NoSuchAlgorithmException;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
-import android_xkkj_api.HwAcl;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -20,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         TextView tv = findViewById(R.id.TW);
         int produce_Clear_AllInfo_error=0,produce_set_config_error=0,get_device_info_error=0,get_random_data32_error=0,get_random_data16_error=0,
@@ -28,27 +31,49 @@ public class MainActivity extends AppCompatActivity {
         ApduCmd apd = new ApduCmd();
         byte[] userpin = new byte[4];
         int statusCode;
-        String cmd;
-//        int backlight =110;
-//        loader.set_backlight(backlight);//设置背光亮度
-//        backlight = loader.get_backlight();//获取背光亮度
-//        Log.d(TAG, "backlight == " + backlight);
-//        int light=loader.get_lightvalue(); //获取光敏值
-//        Log.d(TAG, "lightvalue == " + light);
+        String cmd ,s;
+        int backlight =110;
+        loader.set_backlight(backlight);//设置背光亮度
+        backlight = loader.get_backlight();//获取背光亮度
+        Log.d(TAG, "backlight == " + backlight);
+        int light=loader.get_lightvalue(); //获取光敏值
+        Log.d(TAG, "lightvalue == " + light);
         loader.DebugSwitch(false);
-        for(int i=1; i<=1000; i++){
+        //loader.code_update(false);
+        backlight=loader.board_select();
+        Log.d(TAG, "board_select == " + backlight);
+        //loader.code_update(false);
+        //loader.code_DownLoad(false);
+        for(int i=1; i<=0; i++){
         try {
             Thread.sleep((long) 2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
             //打开设备
-            loader.acl_open();
+//            loader.acl_open();
+//            statusCode = loader.security_setConfig(false);
+//            Log.d(TAG, "acl16_security_setConfig== " + String.format("%04X", statusCode));
+//            byte[] get_status = new byte[1];
+//            statusCode = loader.security_getConfig(get_status);
+//            s = HexUtils.toHex(get_status);
+//            Log.d(TAG, "security_getConfig== " + String.format("%04X", statusCode));
+//            Log.d(TAG, "get_status== " + s);
+
             //清除信息
-            statusCode = loader.produce_Clear_AllInfo();
-            Log.d(TAG, "produce_Clear_AllInfo_configStatus== " + String.format("%04X", statusCode));
-            if(statusCode != 0x9000)
-                produce_Clear_AllInfo_error = produce_Clear_AllInfo_error + 1;
+//            statusCode = loader.produce_Clear_AllInfo();
+//            Log.d(TAG, "produce_Clear_AllInfo_configStatus== " + String.format("%04X", statusCode));
+//            if(statusCode != 0x9000)
+//                produce_Clear_AllInfo_error = produce_Clear_AllInfo_error + 1;
+//            statusCode = loader.produce_Clear_Cos();
+//            Log.d(TAG, "produce_Clear_COS== " + String.format("%04X", statusCode));
+//            loader.acl_close();
+//            loader.acl_poweroff();
+//            loader.acl_poweron();
+//            loader.code_DownLoad(false);
+//            loader.acl_close();
+            loader.code_update(false);
+            loader.acl_open();
             //设置生产信息
             cmd = apd.cmd_produce_set_device_info();
             statusCode = loader.produce_set_config(HexUtils.toBytes(cmd));
@@ -58,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
             //获取设备信息
             byte[] deviceinfobytes = new byte[80];
             statusCode = loader.get_device_info(deviceinfobytes);
-            String s = HexUtils.toHex(deviceinfobytes);
+            s = HexUtils.toHex(deviceinfobytes);
             Log.d(TAG, "configStatus== " + String.format("%04X", statusCode));
             Log.d(TAG, "get_device_info== " + s);
             if(statusCode != 0x9000)
@@ -120,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
                 export_public_key_error = export_public_key_error + 1;
             //签名
             String msgHash = "4ad24b522ead1746acfc6b7db2cf5d888c7247cbf8af3ae856ad614673613c68";
+
             byte[] signature = new byte[65];
             statusCode = loader.ecdsa_sign(HexUtils.toBytes(msgHash), signature);
             Log.d(TAG, "configStatus== " + String.format("%04X", statusCode));
@@ -127,6 +153,9 @@ public class MainActivity extends AppCompatActivity {
             if(statusCode != 0x9000)
                 ecdsa_sign_error = ecdsa_sign_error + 1;
 //        //验签
+
+
+            //刷cos，写安全序列
             loader.acl_close();
             Log.d(TAG, "=======测试的第"+i+"次===========");
             Log.d(TAG,"produce_Clear_AllInfo errorr："+produce_Clear_AllInfo_error+"次");

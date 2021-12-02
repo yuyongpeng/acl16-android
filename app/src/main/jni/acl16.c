@@ -11,6 +11,12 @@
 
 static int Debug=0;
 
+static xkkj_device device_id[]={
+    {1,"arttv10"},
+    {2,"dphotos10"},
+    {},
+};
+
 void DebugSwitch(int status)
 {
     Debug=status;
@@ -20,21 +26,28 @@ void DebugSwitch(int status)
 
 const char* ACL16_board_select= "/proc/boardinfo";
 int board_select(){
+        int board_tmp=0;;
+        char board_name[10] = {0};
         int board_fd = open(ACL16_board_select, O_RDONLY);
         if(board_fd < 0){
-                return -1;
+            return -1;
         }else{
-                close(board_fd);
-                return 0;
+            read(board_fd,board_name,10);
+            for(board_tmp=0;board_tmp<sizeof(device_id)/sizeof(xkkj_device);board_tmp++){
+               if(strncmp(device_id[board_tmp].device_name,board_name,strlen(device_id[board_tmp].device_name))==0)
+                    break;
+            }
+            close(board_fd);
+            return  device_id[board_tmp].device_num;
         }
 }
-int acl16_open(Acl16* fd){
+int acl16_open(Acl16* fd,uint8_t modePa){
     int errnoNu;
     fd->_fd_board =  errnoNu = open(ACL16_board_select, O_RDONLY);
     if(fd->_fd_board < 0){
         return acl16_smdt_open(fd);
     }else{
-        return acl16_xkkj_open(fd);
+        return acl16_xkkj_open(fd,modePa);
     }
 }
 
@@ -56,9 +69,9 @@ int acl16_write(Acl16* fd, uint8_t *data, size_t lenth){
 
 
 
-int acl16_poweron(Acl16* fd){
+int acl16_poweron(){
     if(board_select() < 0){
-          return acl16_smdt_poweron();
+          return acl16_smdt_poweron();//此处并未具体实现
     }else{
            return acl16_xkkj_poweron();
     }
@@ -66,7 +79,7 @@ int acl16_poweron(Acl16* fd){
 }
 int acl16_poweroff(){
     if(board_select() < 0){
-          return acl16_smdt_poweroff();
+          return acl16_smdt_poweroff();//此处并未具体实现
      }else{
           return acl16_xkkj_poweroff();
     }
@@ -198,25 +211,32 @@ static void error_num(uint16_t errorData) {
 
 
 
-void print_array(uint8_t* data, int len, const char* name) {
+void print_array(uint8_t* data, int len, const char* name){
     if( 1 == Debug ){
-	char temp[4] = {0};
-    const int LEN = len * 2;
-    char *buf = (char*)malloc(LEN * sizeof(char));
-    if (NULL == buf) {
-       return;
-    }
-    memset(buf, 0, LEN);
-    for (int i = 0; i < len; i++) {
-    memset(temp, 0, 4);
-    snprintf(temp, 4, "%02x", *(data + i));
-    strcat(buf, temp);
-    }
-    LOGD("%s:%s",name,buf);
-    free(buf);
-    buf = NULL;
+        if(data){
+	        char temp[4] = {0};
+            const int LEN = len * 2;
+            char *buf = (char*)malloc(LEN * sizeof(char));
+            if (NULL == buf) {
+                return;
+            }
+            memset(buf, 0, LEN);
+            for (int i = 0; i < len; i++) {
+                memset(temp, 0, 4);
+                snprintf(temp, 4, "%02x", *(data + i));
+                strcat(buf, temp);
+            }
+            LOGD("%s:%s",name,buf);
+            free(buf);
+            buf = NULL;
+        }else
+        LOGD("%s",name);
     }
 }
+
+
+
+
 
 static int cmd_pack_tx_rx(Acl16* fd, ApduCmd *apduPack, uint8_t *apduData, uint8_t** out) {
 	uint16_t crc16Tmp;
@@ -264,7 +284,7 @@ static int cmd_pack_tx_rx(Acl16* fd, ApduCmd *apduPack, uint8_t *apduData, uint8
 		*(apduCmdTmp + cmdTxAllLenth - 1) = (uint8_t)(crc16Tmp & 0xff);
 
 		usleep(50000);
-		LOGD("acl16_write:%02x,%02x",acl16_write(fd, apduCmdTmp, cmdTxAllLenth),cmdTxAllLenth);
+		acl16_write(fd, apduCmdTmp, cmdTxAllLenth);
 		//usleep(50000);
 
 
@@ -607,7 +627,7 @@ int acl16_generateKeyPariById(Acl16* fd, uint8_t *rdBuf)
 
 //15.Ecdsa签名  CMD_ECDSA_SIGN	0x0B
 
-int acl16_ecdsa_sign(Acl16* fd, uint8_t *txData, uint8_t *signature) { // 固定32字节的 txData, 固定64字节的 rxData
+int acl16_ecdsa_sign(Acl16* fd, uint8_t *txData, uint8_t *signature) { // 固定32字节的 txData, 固定65字节的 rxData
 	uint8_t *rdBufTmp = NULL;
 	ApduCmd apduCmdTmp;
 	apduCmdTmp.ch = CMD_TX_CH;
@@ -639,6 +659,7 @@ int acl16_ecdsa_verify(Acl16* fd,  uint8_t *signature) { // msg=32,verifyData=64
 	apduCmdTmp.lc = CMD_ECDSA_VERIFY_TX96_LENTH;
 	apduCmdTmp.le = CMD_ECDSA_VERIFY_RX_LENTH;
     print_array(signature,CMD_ECDSA_VERIFY_TX96_LENTH,"CMD_ECDSA_VERIFY_TX");
+
 	memcpy(txData, signature, 96);
 	uint16_t errnoNu = cmd_pack_tx_rx(fd, &apduCmdTmp, txData, &rdBufTmp);
 	free(rdBufTmp);
@@ -666,3 +687,42 @@ int acl16_export_public_key(Acl16* fd, uint8_t* pubkey) { // 固定64字节的 p
 	print_array(pubkey,CMD_EXPORT_PUBLICKEY_BY_ID_RX_LENTH,"CMD_EXPORT_PUBLICKEY_BY_ID_RX");
 	return errnoNu;
 }
+
+//18.安全标志设置   CMD_SECURITY_SET_CONFIG   0x0F
+int acl16_security_setConfig(Acl16* fd,uint8_t *security_status){
+    	uint8_t *rdBufTmp;
+    	ApduCmd apduCmdTmp;
+    	apduCmdTmp.ch = CMD_TX_CH;
+    	apduCmdTmp.cmd = CMD_SECURITY_SET_CONFIG;
+    	apduCmdTmp.p1 = CMD_SECURITY_SET_CONFIG_P1;
+    	apduCmdTmp.p2 = CMD_SECURITY_SET_CONFIG_P2;
+    	apduCmdTmp.lc = CMD_SECURITY_SET_CONFIG_TX_LENTH;
+    	apduCmdTmp.le = CMD_SECURITY_SET_CONFIG_RX_LENTH;
+    	print_array(security_status,CMD_SECURITY_SET_CONFIG_TX_LENTH,"CMD_SECURITY_SET_CONFIG");
+        int errnoNu = cmd_pack_tx_rx(fd, &apduCmdTmp, security_status, &rdBufTmp);
+        free(rdBufTmp);
+        rdBufTmp = NULL;
+        return errnoNu;
+}
+
+
+//19.安全标志获取   CMD_SECURITY_GET_CONFIG   0x1F
+int acl16_security_getConfig(Acl16* fd,uint8_t* security_status){
+       	uint8_t *rdBufTmp;
+       	ApduCmd apduCmdTmp;
+       	apduCmdTmp.ch = CMD_TX_CH;
+       	apduCmdTmp.cmd = CMD_SECURITY_GET_CONFIG;
+       	apduCmdTmp.p1 = CMD_SECURITY_GET_CONFIG_P1;
+       	apduCmdTmp.p2 = CMD_SECURITY_GET_CONFIG_P2;
+       	apduCmdTmp.lc = CMD_SECURITY_GET_CONFIG_TX_LENTH;
+       	apduCmdTmp.le = CMD_SECURITY_GET_CONFIG_RX_LENTH;
+        int errnoNu = cmd_pack_tx_rx(fd, &apduCmdTmp, NULL, &rdBufTmp);
+    	if (rdBufTmp) {
+    		memcpy(security_status, (rdBufTmp + 3), CMD_SECURITY_GET_CONFIG_RX_LENTH);
+    		free(rdBufTmp);
+    		rdBufTmp = NULL;
+    	}
+    	print_array(security_status,CMD_SECURITY_GET_CONFIG_RX_LENTH,"CMD_SECURITY_GET_CONFIG");
+    	return errnoNu;
+}
+

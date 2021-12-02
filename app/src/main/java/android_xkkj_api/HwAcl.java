@@ -109,6 +109,11 @@ public class HwAcl {
      */
     public native int  export_public_key(byte[] pubkey);
 
+    public  native  int  security_setConfig(boolean set_status);
+    public  native  int  security_getConfig(byte[] get_status);
+    public  native  int  code_DownLoad(boolean security_code);
+    public  native  int  code_update(boolean security_code);
+
     /*
      * 函数名：acl_write(byte[] txdata);
      * 描述：写数据

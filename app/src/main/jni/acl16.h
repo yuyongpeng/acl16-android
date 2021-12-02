@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
+#include <sys/types.h>
 #include<Android/log.h>
 #define LOG_TAG "HwAcl"
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG ,__VA_ARGS__) // 定义LOGD类型
@@ -116,6 +117,24 @@
 #define   CMD_EXPORT_PUBLICKEY_BY_ID_TX_LENTH	0x0000
 #define   CMD_EXPORT_PUBLICKEY_BY_ID_RX_LENTH	0x0040
 
+
+//18.安全标志设置
+#define		CMD_SECURITY_SET_CONFIG   0x0F
+#define		CMD_SECURITY_SET_CONFIG_P1		0x00
+#define		CMD_SECURITY_SET_CONFIG_P2		0x00
+#define		CMD_SECURITY_SET_CONFIG_TX_LENTH	0x0001
+#define		CMD_SECURITY_SET_CONFIG_RX_LENTH	0x0000
+
+
+//19.安全标志获取
+#define		CMD_SECURITY_GET_CONFIG   0x1F
+#define		CMD_SECURITY_GET_CONFIG_P1		0x00
+#define		CMD_SECURITY_GET_CONFIG_P2		0x00
+#define		CMD_SECURITY_GET_CONFIG_TX_LENTH	0x0000
+#define		CMD_SECURITY_GET_CONFIG_RX_LENTH	0x0001
+
+
+
 #define   CLEAR_COS_BACKUP_ALL   4
 
 #define ISOSW_COMMUNI_OUT_ERROR				0x8001 
@@ -166,9 +185,6 @@
 
 
 
-
-
-
 typedef struct {
 	uint8_t ch;
 	uint8_t cmd;
@@ -209,6 +225,7 @@ typedef struct {
 	int _fd;
 	int _fd_cs;
 	int _fd_board;
+	uint8_t modePa;
 } Acl16;
 
 typedef struct {
@@ -217,6 +234,12 @@ typedef struct {
 	uint8_t maxRextryTimes;     //pin码的最大重试次数
 	uint8_t leftRetryTimes;     //pin码的剩余重试次数
 } Acl16PinInfo;
+
+
+typedef struct{
+    uint8_t  device_num;
+    const char* device_name;
+}xkkj_device;
 
 
 int acl16_produce_set_config(Acl16* fd, uint8_t* set);
@@ -235,12 +258,17 @@ int acl16_remote_ClearCos(Acl16* fd, uint8_t p1, uint8_t p2, uint8_t *txData);
 int acl16_generateKeyPariById(Acl16* fd,uint8_t *rdBuf);
 int acl16_ecdsa_sign(Acl16* fd, uint8_t *msg, uint8_t *signature); // msg=32byte, signature=64byte
 int acl16_ecdsa_verify(Acl16* fd, uint8_t *signature); // msg=32byte,verifyData=64byte,pubkey=64byte
-int acl16_export_public_key(Acl16* fd, uint8_t* pubkey); // 固定64字节的 rxData
+int acl16_export_public_key(Acl16* fd, uint8_t* pubkey); // 固定65字节的 rxData
+int acl16_security_setConfig(Acl16* fd,uint8_t *security_status);
+int acl16_security_getConfig(Acl16* fd,uint8_t* security_status);
 
 
 
-int acl16_xkkj_open(Acl16* fd);
+
+int acl16_xkkj_open(Acl16* fd,uint8_t modePa);
 int acl16_xkkj_close(Acl16* fd);
+int acl16_xkkj_csopen(Acl16* fd);
+int acl16_xkkj_csclose(Acl16* fd);
 int acl16_xkkj_read(Acl16* fd, uint8_t *data, size_t lenth);
 int acl16_xkkj_write(Acl16* fd, uint8_t *data, size_t lenth);
 int acl16_xkkj_poweron();
@@ -258,7 +286,7 @@ int acl16_smdt_poweron();
 int acl16_smdt_poweroff();
 
 
-int acl16_open(Acl16* fd);
+int acl16_open(Acl16* fd,uint8_t modePa);
 int acl16_close(Acl16* fd);
 int acl16_read(Acl16* fd, uint8_t *data, size_t lenth);
 int acl16_write(Acl16* fd, uint8_t *data, size_t lenth);
@@ -269,4 +297,5 @@ int acl16_poweroff();
 void print_array(uint8_t* data, int len, const char* name);
 int  board_select();
 void DebugSwitch(int status);
+int codeDownLoad(char security_code);
 #endif

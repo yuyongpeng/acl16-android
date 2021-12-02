@@ -115,6 +115,41 @@ JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_ecdsa_1verify
 JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_export_1public_1key
   (JNIEnv *, jobject, jbyteArray);
 
+
+/*
+ * Class:     android_xkkj_api_HwAcl
+ * Method:    security_setConfig
+ * Signature: (Z)I
+ */
+JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_security_1setConfig
+  (JNIEnv *, jobject, jboolean);
+
+/*
+ * Class:     android_xkkj_api_HwAcl
+ * Method:    security_getConfig
+ * Signature: ([B)I
+ */
+JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_security_1getConfig
+  (JNIEnv *, jobject, jbyteArray);
+
+
+/*
+ * Class:     android_xkkj_api_HwAcl
+ * Method:    code_DownLoad
+ * Signature: (Z)I
+ */
+JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_code_1DownLoad
+  (JNIEnv *, jobject, jboolean);
+
+/*
+ * Class:     android_xkkj_api_HwAcl
+ * Method:    code_update
+ * Signature: (Z)I
+ */
+JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_code_1update
+  (JNIEnv *, jobject, jboolean);
+
+
 /*
  * Class:     android_xkkj_api_HwAcl
  * Method:    acl_write
@@ -218,6 +253,9 @@ JNIEXPORT void JNICALL Java_android_1xkkj_1api_HwAcl_DebugSwitch
  */
 JNIEXPORT void JNICALL Java_android_1xkkj_1api_HwAcl_devicereboot
   (JNIEnv *, jobject);
+
+
+
 
 
 
