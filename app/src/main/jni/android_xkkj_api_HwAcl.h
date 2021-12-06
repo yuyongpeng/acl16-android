@@ -119,10 +119,10 @@ JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_export_1public_1key
 /*
  * Class:     android_xkkj_api_HwAcl
  * Method:    security_setConfig
- * Signature: (Z)I
+ * Signature: I
  */
 JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_security_1setConfig
-  (JNIEnv *, jobject, jboolean);
+  (JNIEnv *, jobject);
 
 /*
  * Class:     android_xkkj_api_HwAcl
@@ -130,6 +130,14 @@ JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_security_1setConfig
  * Signature: ([B)I
  */
 JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_security_1getConfig
+  (JNIEnv *, jobject, jbyteArray);
+
+/*
+ * Class:     android_xkkj_api_HwAcl
+ * Method:    Cos_Status
+ * Signature: ([B)I
+ */
+JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_Cos_1Status
   (JNIEnv *, jobject, jbyteArray);
 
 
@@ -255,7 +263,13 @@ JNIEXPORT void JNICALL Java_android_1xkkj_1api_HwAcl_devicereboot
   (JNIEnv *, jobject);
 
 
-
+/*
+ * Class:     android_xkkj_api_HwAcl
+ * Method:    cos_is_Exist
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_cos_1is_1Exist
+  (JNIEnv *, jobject);
 
 
 

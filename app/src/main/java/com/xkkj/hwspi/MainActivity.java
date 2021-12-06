@@ -24,66 +24,55 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         HwAcl loader = new HwAcl();
+        loader.DebugSwitch(true);
+        int backlight = 110;
+        loader.set_backlight(backlight);//设置背光亮度
+        backlight = loader.get_backlight();//获取背光亮度
+        Log.d(TAG, "backlight == " + backlight);
+        int light = loader.get_lightvalue(); //获取光敏值
+        Log.d(TAG, "lightvalue == " + light);
         int board_select = loader.board_select();
         switch (board_select) {
             case -1://凡高
-                testFangao_acl();
+                testFangao_acl(loader);
                 break;
             case 1://ArtTV
-                testArtTV_acl();
+                testArtTV_acl(loader);
                 break;
             case 2://DPhotos
-                testDPhotos_acl();
+                testDPhotos_acl(loader);
                 break;
             default:
                 break;
         }
     }
 
-    private void testDPhotos_acl() {
-        HwAcl loader = new HwAcl();
-        int backlight = 110;
-        loader.set_backlight(backlight);//设置背光亮度
-        backlight = loader.get_backlight();//获取背光亮度
-        Log.d(TAG, "backlight == " + backlight);
-        int light = loader.get_lightvalue(); //获取光敏值
-        Log.d(TAG, "lightvalue == " + light);
-        loader.DebugSwitch(true);
-        backlight = loader.board_select();
-        Log.d(TAG, "board_select == " + backlight);
+    private void testDPhotos_acl(HwAcl loader) {
+        Log.d(TAG,"This is DPhotos Board!");
 //        statusCode = loader.code_DownLoad(false);// 正式是true，测试是false， Launcher里调用
 //        Log.d(TAG, "code_DownLoad == " + statusCode);
         activateTask(loader);
     }
 
-    private void testArtTV_acl() {
-        HwAcl loader = new HwAcl();
-        int statusCode;
-        int backlight = 110;
-        loader.set_backlight(backlight);//设置背光亮度
-        backlight = loader.get_backlight();//获取背光亮度
-        Log.d(TAG, "backlight == " + backlight);
-        int light = loader.get_lightvalue(); //获取光敏值
-        Log.d(TAG, "lightvalue == " + light);
-        loader.DebugSwitch(true);
-        backlight = loader.board_select();
-        Log.d(TAG, "board_select == " + backlight);
-        statusCode = loader.code_DownLoad(false);// 正式是true，测试是false， Launcher里调用
-        Log.d(TAG, "code_DownLoad == " + statusCode);
+    private void testArtTV_acl(HwAcl loader) {
+        Log.d(TAG,"This is ArtTV Board!");
+//        int statusCode;
+//        byte[] cos_status = new byte[1];
+//        statusCode = loader.Cos_Status(cos_status);
+//        //获取cos状态
+//        String s = HexUtils.toHex(cos_status);
+//        Log.d(TAG, "cos_getStatus== " + String.format("%04X", statusCode));
+//        Log.d(TAG, "cos_status== " + s);
+//
+//
+//
+//        statusCode = loader.code_DownLoad(false);// 正式是true，测试是false， Launcher里调用
+//        Log.d(TAG, "code_DownLoad == " + statusCode);
         activateTask(loader);
     }
 
-    private void testFangao_acl() {
-        HwAcl loader = new HwAcl();
-        int backlight = 110;
-        loader.set_backlight(backlight);//设置背光亮度
-        backlight = loader.get_backlight();//获取背光亮度
-        Log.d(TAG, "backlight == " + backlight);
-        int light = loader.get_lightvalue(); //获取光敏值
-        Log.d(TAG, "lightvalue == " + light);
-        loader.DebugSwitch(true);
-        backlight = loader.board_select();
-        Log.d(TAG, "board_select == " + backlight);
+    private void testFangao_acl(HwAcl loader) {
+        Log.d(TAG,"This is Fangao Board!");
 //        statusCode = loader.code_DownLoad(false);// 正式是true，测试是false， Launcher里调用  凡高的板子不需要
         activateTask(loader);
     }
@@ -110,8 +99,10 @@ public class MainActivity extends AppCompatActivity {
             if (statusCode != 0x9000)
                 produce_Clear_AllInfo_error = produce_Clear_AllInfo_error + 1;
 
+
+
             //设置安全码
-            statusCode = loader.security_setConfig(true);
+            statusCode = loader.security_setConfig();
             Log.d(TAG, "acl16_security_setConfig== " + String.format("%04X", statusCode));
             if (statusCode != 0x9000)
                 security_setConfig_error = security_setConfig_error + 1;
@@ -123,6 +114,12 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "get_status== " + s);
             if (statusCode != 0x9000)
                 security_getConfig_error = security_getConfig_error + 1;
+            byte[] cos_status = new byte[1];
+            statusCode = loader.Cos_Status(cos_status);
+            //获取cos状态
+            s = HexUtils.toHex(cos_status);
+            Log.d(TAG, "cos_getStatus== " + String.format("%04X", statusCode));
+            Log.d(TAG, "cos_status== " + s);
 
             //设置生产信息
             cmd = apd.cmd_produce_set_device_info();

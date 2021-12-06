@@ -422,8 +422,9 @@ JNIEXPORT void JNICALL Java_android_1xkkj_1api_HwAcl_DebugSwitch
 
 
 JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_security_1setConfig
-  (JNIEnv *env, jobject obj, jboolean security_status){
-    jbyte buffer = security_status==JNI_TRUE ? 1: 0;
+  (JNIEnv *env, jobject jobj){
+    //jbyte buffer = security_status==JNI_TRUE ? 1: 0;
+    jbyte buffer = 1;
     int errnoNu = acl16_security_setConfig(&acl16,(uint8_t*)&buffer);
     if (errnoNu != ISOSW_SUCCESSFUL) {
         LOGE("acl16_security_set_config exec failed!");
@@ -447,6 +448,28 @@ JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_security_1getConfig
 
 
 
+/*
+ * Class:     android_xkkj_api_HwAcl
+ * Method:    Cos_Status
+ * Signature: ([B)I
+ */
+JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_Cos_1Status
+  (JNIEnv *env , jobject jobj, jbyteArray cos_status)
+{
+     jbyte buffer=0x00;
+     int errnoNu = acl16_cos_status(&acl16,(uint8_t*)&buffer);
+     env->SetByteArrayRegion(cos_status,0,1,(const jbyte*)&buffer);
+     if (errnoNu != ISOSW_SUCCESSFUL) {
+         LOGE("acl16_security_get_config exec failed!");
+         return errnoNu;
+     }
+     return ISOSW_SUCCESSFUL;
+}
+
+
+
+
+
 JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_code_1update
   (JNIEnv *env, jobject obj, jboolean security_code){
 
@@ -465,6 +488,10 @@ JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_code_1DownLoad
 }
 
 
+JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_cos_1is_1Exist
+  (JNIEnv *env, jobject  jobj){
+    return isExist();
+}
 
  JNIEXPORT void JNICALL Java_android_1xkkj_1api_HwAcl_devicereboot
    (JNIEnv *env, jobject  obj)

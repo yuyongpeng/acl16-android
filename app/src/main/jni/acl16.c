@@ -698,7 +698,6 @@ int acl16_security_setConfig(Acl16* fd,uint8_t *security_status){
     	apduCmdTmp.p2 = CMD_SECURITY_SET_CONFIG_P2;
     	apduCmdTmp.lc = CMD_SECURITY_SET_CONFIG_TX_LENTH;
     	apduCmdTmp.le = CMD_SECURITY_SET_CONFIG_RX_LENTH;
-    	print_array(security_status,CMD_SECURITY_SET_CONFIG_TX_LENTH,"CMD_SECURITY_SET_CONFIG");
         int errnoNu = cmd_pack_tx_rx(fd, &apduCmdTmp, security_status, &rdBufTmp);
         free(rdBufTmp);
         rdBufTmp = NULL;
@@ -726,3 +725,22 @@ int acl16_security_getConfig(Acl16* fd,uint8_t* security_status){
     	return errnoNu;
 }
 
+//20.COS状态   CMD_COS_STATUS   0x1E
+int acl16_cos_status(Acl16* fd,uint8_t* cos_status){
+       	uint8_t *rdBufTmp;
+       	ApduCmd apduCmdTmp;
+       	apduCmdTmp.ch = CMD_TX_CH;
+       	apduCmdTmp.cmd = CMD_COS_STATUS;
+       	apduCmdTmp.p1 = CMD_COS_STATUS_P1;
+       	apduCmdTmp.p2 = CMD_COS_STATUS_P2;
+       	apduCmdTmp.lc = CMD_COS_STATUS_TX_LENTH;
+       	apduCmdTmp.le = CMD_COS_STATUS_RX_LENTH;
+        int errnoNu = cmd_pack_tx_rx(fd, &apduCmdTmp, NULL, &rdBufTmp);
+    	if (rdBufTmp) {
+    		memcpy(cos_status, (rdBufTmp + 3), CMD_COS_STATUS_RX_LENTH);
+    		free(rdBufTmp);
+    		rdBufTmp = NULL;
+    	}
+    	print_array(cos_status,CMD_COS_STATUS_RX_LENTH,"CMD_COS_STATUS_RX_LENTH");
+    	return errnoNu;
+}

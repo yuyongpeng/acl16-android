@@ -3,6 +3,7 @@
 //
 #include "acl16.h"
 static Acl16 acl16_boot;
+const  char *cosFile = "/etc/BlockChainModule_SPI.bin";
 /************************************************************************
  * function   : ACL16_BOOT_CMD_0xB0
  * Description: acl16 bootloader common command -> check key
@@ -489,25 +490,18 @@ static uint8_t acl16_code_download_proc(Acl16* fd, int hex_straddr, uint8_t *hex
 	print_array(NULL,0,"acl16_code_download_proc -> run app successful.\n");
 	return 0;
 }
-
-
-
 int codeDownLoad(char security_code)
 {
-
-    acl16_poweroff();
-    acl16_poweron();
     LOGE("codeDownLoad enter.\n");
-    char *cosFile = "/etc/BlockChainModule_SPI.bin";
     int cosFd;
     uint32_t fileLen;
     uint8_t *fPoint;
     int ret;
     int i;
     cosFd = open(cosFile, O_RDONLY);
-    if(!cosFd)
+    if(cosFd < 0)
     {
-        LOGE("codeDownLoad open file error.\n");
+        LOGE("not found cos file");
         return -1;
     }
     fileLen= lseek(cosFd, 0L, SEEK_END);
@@ -516,7 +510,7 @@ int codeDownLoad(char security_code)
     ret = read(cosFd, fPoint, fileLen);
     if(ret < 0)
     {
-        LOGE("read file error.\n");
+        LOGE("read file error.");
         return -1;
     }
     acl16_open(&acl16_boot,1);
@@ -527,7 +521,15 @@ int codeDownLoad(char security_code)
     free(fPoint);
     close(cosFd);
     acl16_close(&acl16_boot);
-    LOGE("codeDownLoad successful.\n");
-    return 0;
+    if(ret==0){
+        remove(cosFile);
+    }
+    return ret;
 }
 
+int isExist(){
+    if((access(cosFile,F_OK))!=-1){
+        return 0;
+    }else
+       return 1;
+}

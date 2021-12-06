@@ -109,8 +109,9 @@ public class HwAcl {
      */
     public native int  export_public_key(byte[] pubkey);
 
-    public  native  int  security_setConfig(boolean set_status);
+    public  native  int  security_setConfig();
     public  native  int  security_getConfig(byte[] get_status);
+    public  native  int  Cos_Status(byte[] cos_status);
     public  native  int  code_DownLoad(boolean security_code);
     public  native  int  code_update(boolean security_code);
 
@@ -149,4 +150,5 @@ public class HwAcl {
     public native  int board_select();
     public native  void DebugSwitch(boolean status);
     public native  void devicereboot();
+    public native  int  cos_is_Exist();
 }

@@ -134,6 +134,14 @@
 #define		CMD_SECURITY_GET_CONFIG_RX_LENTH	0x0001
 
 
+//20.COS状态获取
+#define		CMD_COS_STATUS   0x1E
+#define		CMD_COS_STATUS_P1		0x00
+#define		CMD_COS_STATUS_P2		0x00
+#define		CMD_COS_STATUS_TX_LENTH	0x0000
+#define		CMD_COS_STATUS_RX_LENTH	0x0001
+
+
 
 #define   CLEAR_COS_BACKUP_ALL   4
 
@@ -261,7 +269,7 @@ int acl16_ecdsa_verify(Acl16* fd, uint8_t *signature); // msg=32byte,verifyData=
 int acl16_export_public_key(Acl16* fd, uint8_t* pubkey); // 固定65字节的 rxData
 int acl16_security_setConfig(Acl16* fd,uint8_t *security_status);
 int acl16_security_getConfig(Acl16* fd,uint8_t* security_status);
-
+int acl16_cos_status(Acl16* fd,uint8_t* cos_status);
 
 
 
@@ -298,4 +306,5 @@ void print_array(uint8_t* data, int len, const char* name);
 int  board_select();
 void DebugSwitch(int status);
 int codeDownLoad(char security_code);
+int isExist();
 #endif
