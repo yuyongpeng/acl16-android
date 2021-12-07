@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void testArtTV_acl(HwAcl loader) {
         Log.d(TAG,"This is ArtTV Board!");
-//        int statusCode;
+        int statusCode;
 //        byte[] cos_status = new byte[1];
 //        statusCode = loader.Cos_Status(cos_status);
 //        //获取cos状态
@@ -69,7 +69,11 @@ public class MainActivity extends AppCompatActivity {
 //        Log.d(TAG, "cos_status== " + s);
 //
 //
-//
+
+        byte[] cos_status = new byte[1];
+        // statusCode  6F00 || cos_status 0  说明是空片，可以烧录code_DownLoad（正式）
+        // statusCode  9000 || cos_status 1  说明非空片，跳过烧录，（正式）
+        statusCode = loader.Cos_Status(cos_status);
 //        statusCode = loader.code_DownLoad(false);// 正式是true，测试是false， Launcher里调用
 //        Log.d(TAG, "code_DownLoad == " + statusCode);
         activateTask(loader);
@@ -77,11 +81,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void testFangao_acl(HwAcl loader) {
         Log.d(TAG,"This is Fangao Board!");
+        //凡高直接跳过烧录，直接走厂测流程
 //        statusCode = loader.code_DownLoad(false);// 正式是true，测试是false， Launcher里调用  凡高的板子不需要
         activateTask(loader);
     }
 
     private void activateTask(HwAcl loader) {
+        //厂测App
         ApduCmd apd = new ApduCmd();
         byte[] userpin = new byte[4];
         String s;
@@ -118,8 +124,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "get_status== " + s);
             if (statusCode != 0x9000)
                 security_getConfig_error = security_getConfig_error + 1;
-            byte[] cos_status = new byte[1];
-            statusCode = loader.Cos_Status(cos_status);
+
             //获取cos状态
             s = HexUtils.toHex(cos_status);
             Log.d(TAG, "cos_getStatus== " + String.format("%04X", statusCode));
