@@ -1,6 +1,37 @@
 #include "android_xkkj_api_HwAcl.h"
 
 static Acl16 acl16;
+
+
+char* jstringToChar(JNIEnv *env, jstring jstr) {
+    char *rtn = NULL;
+    jclass clsstring = env->FindClass("java/lang/String");
+    jstring strencode = env->NewStringUTF("utf-8");
+    jmethodID mid = env->GetMethodID(clsstring, "getBytes", "(Ljava/lang/String;)[B");
+    jbyteArray barr = (jbyteArray) env->CallObjectMethod(jstr, mid, strencode);
+    jsize alen = env->GetArrayLength( barr);
+    jbyte *ba = env->GetByteArrayElements(barr, JNI_FALSE);
+    if (alen > 0) {
+        rtn = (char *) malloc(alen + 1);
+        memcpy(rtn, ba, alen);
+        rtn[alen] = 0;
+    }
+    env->ReleaseByteArrayElements(barr, ba, 0);
+    return rtn;
+}
+
+
+jstring charToJstring(JNIEnv *env, const char *pat) {
+    jclass strClass = env->FindClass( "java/lang/String");
+    jmethodID ctorID = env->GetMethodID(strClass, "<init>","([BLjava/lang/String;)V");
+    jbyteArray bytes = env->NewByteArray(strlen(pat));
+    env->SetByteArrayRegion(bytes, 0, strlen(pat), (jbyte *) pat);
+    jstring encoding = env->NewStringUTF("utf-8");
+    return (jstring) env->NewObject(strClass, ctorID, bytes, encoding);
+}
+
+
+
 char* ConvertJByteaArrayToChars(JNIEnv *env, jbyteArray bytearray)
 {
    char *chars = NULL;
@@ -467,9 +498,6 @@ JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_Cos_1Status
 }
 
 
-
-
-
 JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_code_1update
   (JNIEnv *env, jobject obj, jboolean security_code){
 
@@ -499,3 +527,37 @@ JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_cos_1is_1Exist
       system("/system/bin/reboot");
  }
 
+
+JNIEXPORT void JNICALL Java_android_1xkkj_1api_HwAcl_device_1reset
+  (JNIEnv *, jobject)
+{
+      system( "su -c 'echo --wipe_data > /cache/recovery/command;reboot recovery'");
+}
+
+JNIEXPORT void JNICALL Java_android_1xkkj_1api_HwAcl_device_1upgrade
+  (JNIEnv *env, jobject jobj, jstring path)
+{
+    char* update_path = jstringToChar(env,path);
+    char command[80];
+    sprintf(command,"su -c 'echo --update_package=%s > /cache/recovery/command;reboot recovery'",update_path);
+    //LOGD("update_path:%s",command);
+    system(command);
+    free(update_path);
+    update_path=NULL;
+}
+
+JNIEXPORT jstring JNICALL Java_android_1xkkj_1api_HwAcl_device_1sn
+  (JNIEnv *env, jobject jobj)
+{
+    char sn[40];
+    FILE * p_file = NULL;
+    p_file = popen("su -c getprop sys.serialno", "r");
+    if (!p_file) {
+       LOGE("Erro to popen");
+    }
+    while (fgets(sn, 40, p_file) != NULL) {
+        LOGD("SN:%s", sn);
+    }
+    pclose(p_file);
+    return charToJstring(env,sn);
+}

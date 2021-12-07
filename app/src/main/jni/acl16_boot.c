@@ -522,7 +522,7 @@ int codeDownLoad(char security_code)
     close(cosFd);
     acl16_close(&acl16_boot);
     if(ret==0){
-        remove(cosFile);
+        system("su -c /system/bin/clean_cos.sh");
     }
     return ret;
 }

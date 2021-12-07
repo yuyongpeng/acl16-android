@@ -25,26 +25,30 @@ public class MainActivity extends AppCompatActivity {
 
         HwAcl loader = new HwAcl();
         loader.DebugSwitch(true);
-        int backlight = 110;
-        loader.set_backlight(backlight);//设置背光亮度
-        backlight = loader.get_backlight();//获取背光亮度
-        Log.d(TAG, "backlight == " + backlight);
-        int light = loader.get_lightvalue(); //获取光敏值
-        Log.d(TAG, "lightvalue == " + light);
-        int board_select = loader.board_select();
-        switch (board_select) {
-            case -1://凡高
-                testFangao_acl(loader);
-                break;
-            case 1://ArtTV
-                testArtTV_acl(loader);
-                break;
-            case 2://DPhotos
-                testDPhotos_acl(loader);
-                break;
-            default:
-                break;
-        }
+        //loader.device_reset();
+        //Log.i(TAG,"SN==" + loader.device_sn());
+        loader.device_upgrade("/data/update.zip");
+//        Log.d(TAG,"file is Exist "+ loader.cos_is_Exist());
+//        int backlight = 110;
+//        loader.set_backlight(backlight);//设置背光亮度
+//        backlight = loader.get_backlight();//获取背光亮度
+//        Log.d(TAG, "backlight == " + backlight);
+//        int light = loader.get_lightvalue(); //获取光敏值
+//        Log.d(TAG, "lightvalue == " + light);
+//        int board_select = loader.board_select();
+//        switch (board_select) {
+//            case -1://凡高
+//                testFangao_acl(loader);
+//                break;
+//            case 1://ArtTV
+//                testArtTV_acl(loader);
+//                break;
+//            case 2://DPhotos
+//                testDPhotos_acl(loader);
+//                break;
+//            default:
+//                break;
+//        }
     }
 
     private void testDPhotos_acl(HwAcl loader) {

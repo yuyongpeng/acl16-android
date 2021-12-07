@@ -142,13 +142,29 @@ public class HwAcl {
      * 返回值：正确0，错误：-1
      */
     public native int   acl_poweroff();
+    /*acl设备打开*/
     public native int  acl_open();
+    /*ack设备关闭*/
     public native  int acl_close();
+    /*背光获取*/
     public native  int get_backlight();
+    /*亮度设置*/
     public native  int set_backlight(int  brightness);
+    /*亮度获取*/
     public native  int get_lightvalue();
+    /*板卡类型判断*/
     public native  int board_select();
+    /*调试控制接口*/
     public native  void DebugSwitch(boolean status);
+    /*设备重启*/
     public native  void devicereboot();
+    /*cos固件是否存在*/
     public native  int  cos_is_Exist();
+    /*设备重置*/
+    public  native  void  device_reset();
+    /*设备升级更新*/
+    public  native  void  device_upgrade(String path);
+    /*SN获取*/
+    public  native  String device_sn();
+
 }

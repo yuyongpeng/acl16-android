@@ -272,7 +272,29 @@ JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_cos_1is_1Exist
   (JNIEnv *, jobject);
 
 
+/*
+ * Class:     android_xkkj_api_HwAcl
+ * Method:    device_reset
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_android_1xkkj_1api_HwAcl_device_1reset
+  (JNIEnv *, jobject);
 
+/*
+ * Class:     android_xkkj_api_HwAcl
+ * Method:    device_upgrade
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_android_1xkkj_1api_HwAcl_device_1upgrade
+  (JNIEnv *, jobject, jstring);
+
+/*
+ * Class:     android_xkkj_api_HwAcl
+ * Method:    device_sn
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_android_1xkkj_1api_HwAcl_device_1sn
+  (JNIEnv *, jobject);
 
 #ifdef __cplusplus
 }
