@@ -505,6 +505,10 @@ JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_code_1update
     acl16_produce_Clear_AllInfo(&acl16);
     acl16_produce_Clear_Cos(&acl16);
     acl16_close(&acl16);
+    acl16_poweroff();
+    sleep(1);
+    acl16_poweron();
+    sleep(1);
     return codeDownLoad(security_code==JNI_TRUE ? 1: 0);
 }
 
@@ -531,15 +535,19 @@ JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_cos_1is_1Exist
 JNIEXPORT void JNICALL Java_android_1xkkj_1api_HwAcl_device_1reset
   (JNIEnv *, jobject)
 {
-      system( "su -c 'echo --wipe_data > /cache/recovery/command;reboot recovery'");
+    if(board_select()>0)
+      system("su 0  /system/bin/device_recovery.sh --wipe_data ");
+    else
+        system("su -c 'echo --wipe_data > /cache/recovery/command;reboot recovery'");
 }
 
 JNIEXPORT void JNICALL Java_android_1xkkj_1api_HwAcl_device_1upgrade
   (JNIEnv *env, jobject jobj, jstring path)
 {
     char* update_path = jstringToChar(env,path);
-    char command[80];
-    sprintf(command,"su -c 'echo --update_package=%s > /cache/recovery/command;reboot recovery'",update_path);
+    char command[100];
+    if(board_select()>0)
+        sprintf(command,"su 0  /system/bin/device_recovery.sh --update_package=%s",update_path);
     //LOGD("update_path:%s",command);
     system(command);
     free(update_path);
@@ -551,7 +559,7 @@ JNIEXPORT jstring JNICALL Java_android_1xkkj_1api_HwAcl_device_1sn
 {
     char sn[40];
     FILE * p_file = NULL;
-    p_file = popen("su -c getprop sys.serialno", "r");
+    p_file = popen("getprop sys.serialno", "r");
     if (!p_file) {
        LOGE("Erro to popen");
     }
