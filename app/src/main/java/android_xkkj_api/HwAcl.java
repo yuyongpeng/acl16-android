@@ -165,6 +165,6 @@ public class HwAcl {
     /*设备升级更新*/
     public  native  void  device_upgrade(String path);
     /*SN获取*/
-    public  native  String device_sn();
+    public  native  String device_sn();//对比前缀是否我们定义的
 
 }
