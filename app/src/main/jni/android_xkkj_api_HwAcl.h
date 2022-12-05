@@ -202,10 +202,10 @@ JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_acl_1poweroff
   /*
    * Class:     android_xkkj_api_HwAcl
    * Method:    acl_open
-   * Signature: ()I
+   * Signature: (?I)I
    */
   JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_acl_1open
-    (JNIEnv *, jobject);
+    (JNIEnv *, jobject, jstring, jint);
 
   /*
    * Class:     android_xkkj_api_HwAcl

@@ -49,12 +49,13 @@ char* ConvertJByteaArrayToChars(JNIEnv *env, jbyteArray bytearray)
 /*
  * Class:     android_xkkj_api_HwAcl
  * Method:    acl_open
- * Signature: ()I
+ * Signature: ([?I)I
  */
 JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_acl_1open
-  (JNIEnv *env, jobject jobj)
+  (JNIEnv *env, jobject jobj, jstring ttyPath, jint baudRate)
  {
-        int errnoNu = acl16_open(&acl16,0);
+ 		char* tty_path = jstringToChar(env,ttyPath);
+        int errnoNu = acl16_open(&acl16,0,tty_path,baudRate);
         if (errnoNu != ISOSW_SUCCESSFUL) {
                 LOGE("acl16_open exec failed!");
             	return errnoNu;
@@ -501,7 +502,7 @@ JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_Cos_1Status
 JNIEXPORT jint JNICALL Java_android_1xkkj_1api_HwAcl_code_1update
   (JNIEnv *env, jobject obj, jboolean security_code){
 
-    acl16_open(&acl16,0);
+    acl16_open(&acl16,0,0,0);
     acl16_produce_Clear_AllInfo(&acl16);
     acl16_produce_Clear_Cos(&acl16);
     acl16_close(&acl16);
@@ -559,7 +560,15 @@ JNIEXPORT jstring JNICALL Java_android_1xkkj_1api_HwAcl_device_1sn
 {
     char sn[40];
     FILE * p_file = NULL;
-    p_file = popen("getprop sys.serialno", "r");
+    if(board_select() == 3){
+        //LOGE("board_select is %d", board_select());
+        LOGE("board_select is");
+        p_file = popen("echo usid > sys/class/unifykeys/name", "r");
+        p_file = popen("cat sys/class/unifykeys/read", "r");
+    }
+    else{
+        p_file = popen("getprop sys.serialno", "r");
+    }
     if (!p_file) {
        LOGE("Erro to popen");
     }
@@ -569,3 +578,20 @@ JNIEXPORT jstring JNICALL Java_android_1xkkj_1api_HwAcl_device_1sn
     pclose(p_file);
     return charToJstring(env,sn);
 }
+
+//origin verion
+/*JNIEXPORT jstring JNICALL Java_android_1xkkj_1api_HwAcl_device_1sn
+  (JNIEnv *env, jobject jobj)
+{
+    char sn[40];
+    FILE * p_file = NULL;
+    p_file = popen("getprop sys.serialno", "r");
+    if (!p_file) {
+       LOGE("Erro to popen");
+    }
+    while (fgets(sn, 40, p_file) != NULL) {
+        LOGD("SN:%s", sn);
+    }
+    pclose(p_file);
+    return charToJstring(env,sn);
+}*/

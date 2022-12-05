@@ -9,11 +9,17 @@
 #include <string.h>
 #include <stdlib.h>
 
+
+//test
+extern char* ACL16_smdt_device;
+
+
 static int Debug=0;
 
 static xkkj_device device_id[]={
     {1,"arttv10"},
     {2,"dphotos10"},
+    {3,"shimeitong4k"},
     {},
 };
 
@@ -29,6 +35,16 @@ int board_select(){
         int board_tmp=0;;
         char board_name[10] = {0};
         int board_fd = open(ACL16_board_select, O_RDONLY);
+
+
+        //test uart
+//        if(board_fd > 0)
+//        {
+//            ACL16_smdt_device = "/dev/ttyS4";
+//        }
+//        return -1;
+
+
         if(board_fd < 0){
             return -1;
         }else{
@@ -41,14 +57,29 @@ int board_select(){
             return  device_id[board_tmp].device_num;
         }
 }
-int acl16_open(Acl16* fd,uint8_t modePa){
+int acl16_open(Acl16* fd, uint8_t modePa, char* ttyPath, uint32_t baudRate){
     int errnoNu;
     fd->_fd_board =  errnoNu = open(ACL16_board_select, O_RDONLY);
-    if(fd->_fd_board < 0){
-        return acl16_smdt_open(fd);
+	
+    //test uart
+//    if(fd->_fd_board > 0)
+//    {
+//        ACL16_smdt_device = "/dev/ttyS4";
+//    }
+//    fd->_fd_board =  errnoNu = -1;
+
+	if(ttyPath != NULL){
+        ACL16_smdt_device = ttyPath;
+	}
+	LOGE("acl16_open with %s\n", ACL16_smdt_device);
+
+//当前设置为所有主板均用串口，如需使用spi接口，需要将该语句替换为屏蔽的语句且要对boardinfo进行判断
+	return acl16_smdt_open(fd,baudRate);
+/*    if(fd->_fd_board < 0){
+        return acl16_smdt_open(fd,baudRate);
     }else{
         return acl16_xkkj_open(fd,modePa);
-    }
+    }*/
 }
 
 int acl16_close(Acl16* fd){

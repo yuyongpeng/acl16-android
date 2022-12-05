@@ -7,6 +7,7 @@
 static const char* backlight_node = "/sys/class/backlight/backlight/brightness";
 static const char* xkkj_light_node="/sys/bus/iio/devices/iio:device0/in_voltage2_raw";
 static const char* smdt_light_node="/sys/bus/iio/devices/iio:device0/in_voltage0_raw";
+static const char* smt4k_light_node="/sys/bus/iio/devices/iio:device0/in_voltage2_raw";
 
 
 int backlight_read() {
@@ -52,10 +53,24 @@ int backlight_write(int backlight) {
 int light_read() {
     int light_fd;
     char light[10];
-    if(board_select() < 0)
+
+    if(board_select() < 0){
+        light_fd  = open(smdt_light_node, O_RDONLY);
+    }
+    else if((board_select() == 1)||(board_select() == 2)){
+        light_fd  = open(xkkj_light_node, O_RDONLY);
+    }
+    else if(board_select() == 3){
+        light_fd  = open(smt4k_light_node, O_RDONLY);
+    }
+    //test 4k
+//    light_fd  = open(smt4k_light_node, O_RDONLY);
+
+    //origin
+/*    if(board_select() < 0)
         light_fd  = open(smdt_light_node, O_RDONLY);
     else
-        light_fd  = open(xkkj_light_node, O_RDONLY);
+        light_fd  = open(xkkj_light_node, O_RDONLY);*/
     if ( light_fd < 0) {
         LOGE("can't open node light_node");
         return -1;

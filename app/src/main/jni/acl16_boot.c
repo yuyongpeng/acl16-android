@@ -513,7 +513,7 @@ int codeDownLoad(char security_code)
         LOGE("read file error.");
         return -1;
     }
-    acl16_open(&acl16_boot,1);
+    acl16_open(&acl16_boot,1,0,0);
     if(security_code == 0x01)
         ret = acl16_code_download_proc(&acl16_boot, 0x00000000, fPoint, fileLen, 0x12345678, 0x87654321, 0xAAD3AAD3);
     else

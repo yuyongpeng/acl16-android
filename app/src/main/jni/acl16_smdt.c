@@ -4,7 +4,8 @@
 
 #include "acl16.h"
 #include <termios.h>
-static const char* ACL16_smdt_device = "/dev/ttyS0";
+//static const char* ACL16_smdt_device = "/dev/ttyS0";
+char* ACL16_smdt_device = "/dev/ttyS0";
 
 static speed_t getBaudrate(int baudrate)
 {
@@ -46,7 +47,11 @@ static speed_t getBaudrate(int baudrate)
 
 
 
-static int acl16_smdt_config(Acl16* fd, int baudrate, int flow_ctrl,int databits, int stopbits, int parity) {
+static int acl16_smdt_config(Acl16* fd, unsigned int baudrate, int flow_ctrl,int databits, int stopbits, int parity) {
+	if(baudrate == 0){
+		baudrate = 115200;
+	}
+	LOGE("acl16 open boudrate is %d\n", baudrate);
     speed_t speed = getBaudrate(baudrate);
     if (speed == -1)
     {
@@ -171,7 +176,7 @@ static int acl16_smdt_config(Acl16* fd, int baudrate, int flow_ctrl,int databits
 }
 
 
-int acl16_smdt_open(Acl16* fd){
+int acl16_smdt_open(Acl16* fd, uint32_t baudRate){
         print_array(NULL,0,"acl16_smdt_open!");
         int errnoNu;
         fd->_fd = -1;
@@ -183,7 +188,8 @@ int acl16_smdt_open(Acl16* fd){
         		LOGE("can't open device, %s\n", ACL16_smdt_device);
         		break;
         	}
-        	errnoNu = acl16_smdt_config(fd, 115200, 0,8, 1,'N');
+//        	errnoNu = acl16_smdt_config(fd, 115200, 0,8, 1,'N');
+			errnoNu = acl16_smdt_config(fd, baudRate, 0,8, 1,'N');
         	if (errnoNu < 0) {
         		break;
         	}

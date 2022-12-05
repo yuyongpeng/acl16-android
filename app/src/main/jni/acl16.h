@@ -284,8 +284,7 @@ int acl16_xkkj_poweroff();
 
 
 
-
-int acl16_smdt_open(Acl16* fd);
+int acl16_smdt_open(Acl16* fd, uint32_t baudRate);
 int acl16_smdt_close(Acl16* fd);
 int acl16_smdt_read(Acl16* fd, uint8_t *data, size_t lenth);
 int acl16_smdt_read2(Acl16* fd, uint8_t *data, size_t lenth);
@@ -294,12 +293,14 @@ int acl16_smdt_poweron();
 int acl16_smdt_poweroff();
 
 
-int acl16_open(Acl16* fd,uint8_t modePa);
+
+int acl16_open(Acl16* fd, uint8_t modePa, char* ttyPath, uint32_t baudRate);
 int acl16_close(Acl16* fd);
 int acl16_read(Acl16* fd, uint8_t *data, size_t lenth);
 int acl16_write(Acl16* fd, uint8_t *data, size_t lenth);
 int acl16_poweron();
 int acl16_poweroff();
+
 
 
 void print_array(uint8_t* data, int len, const char* name);
